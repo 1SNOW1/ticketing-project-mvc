@@ -2,10 +2,12 @@ package com.cydeo.entity;
 
 import com.cydeo.enums.Gender;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
+@EqualsAndHashCode(callSuper = true)
 @Data
 @NoArgsConstructor
 
