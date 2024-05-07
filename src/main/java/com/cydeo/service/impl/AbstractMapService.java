@@ -7,7 +7,7 @@ import java.util.Map;
 
 public abstract class AbstractMapService <T,ID> {
 
-    public Map<ID,T> map = new HashMap<>(); //DB
+    public Map<ID,T> map = new HashMap<>(); //DB, empty DB
 
     //save - where are you going to save the data?
     T save(ID id, T object){
