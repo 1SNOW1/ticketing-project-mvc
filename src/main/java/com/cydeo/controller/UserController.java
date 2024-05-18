@@ -1,14 +1,16 @@
 package com.cydeo.controller;
 
 import com.cydeo.dto.UserDTO;
+import com.cydeo.entity.User;
 import com.cydeo.service.RoleService;
 import com.cydeo.service.UserService;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
+import org.yaml.snakeyaml.events.Event;
 
 @Controller
 @RequestMapping("/user")
@@ -21,6 +23,7 @@ public class UserController {
     public UserController(RoleService roleService, UserService userService) {
         this.roleService = roleService;
         this.userService = userService;
+
     }
 
     @GetMapping("/create")
@@ -31,14 +34,45 @@ public class UserController {
         model.addAttribute("users", userService.findAll());
 
 
-        return "/user/create";
+        return "user/create";
     }
 
 
     @PostMapping ("/create")
-    public String insertUser(@ModelAttribute("user") UserDTO user, Model model){
+    public String insertUser(@ModelAttribute("user") UserDTO user){
 
         userService.save(user);
+
+        return "redirect:/user/create";
+    }
+
+    @GetMapping("/update/{username}")
+    public String editUser(@PathVariable("username") String username, Model model){
+        //what is going to be inside?? answer --> whatever the view is looking for
+
+        //user object ${user}
+        model.addAttribute("user", userService.findById(username) );
+        //roles ${roles}
+        model.addAttribute("roles", roleService.findAll());
+        //users ${users}
+        model.addAttribute("users", userService.findAll());
+
+
+        return "/user/update";
+    }
+
+    @PostMapping("/update")
+    public String updateUser(@Validated @ModelAttribute("user")UserDTO user, BindingResult bindingResult){
+
+        userService.update(user);
+
+        return "redirect:/user/create";
+    }
+
+    @GetMapping("/delete/{username}")
+    public String deleteUser(@PathVariable("username") String username){
+
+        userService.deleteById(username);
 
         return "redirect:/user/create";
     }
