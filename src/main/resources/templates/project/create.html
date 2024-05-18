@@ -32,7 +32,7 @@
                                 <div class="panel-body">
 
                                     <!-- ------------------------FORM START----------------------------- -->
-                                    <form th:object="${project}">
+                                    <form th:action="@{/project/create}" method="post" th:object="${project}">
                                         <div class="row">
                                             <div class="col">
                                                 <div class="form-group">
@@ -54,7 +54,7 @@
                                                 <div class="form-group">
                                                     <label>Assigned Manager</label>
                                                     <select name="assignedmanager" th:field="*{assignedManager}" class="custom-select">
-                                                        <option th:value="'"
+                                                        <option th:value="''"
                                                                 th:text="Select"></option>
                                                         <option
                                                                 th:each="manager : ${managers}"
@@ -136,8 +136,8 @@
                                                 <td th:text="${project.projectCode}"></td>
                                                 <td th:text="${project.projectName}"></td>
                                                 <td th:text="${project.startDate + ' ' + project.endDate}"></td>
-                                                <td th:text="${project.assignedManager.firstName + ' ' + project.assignedManager.lastName}"></td>
-                                                <td th:text="${project.projectStatus}"></td>
+                                                <td th:text="${project.assignedManager.firstName + '' + project.assignedManager.lastName}"></td>
+                                                <td th:text="${project.projectStatus.value}"></td>
                                                 <td>
                                                     <a href="#"><button type="button" class="btn btn-warning rounded-0">Update</button></a>
                                                     <a href="#"><button type="button" class="btn btn-danger rounded-0">Delete</button></a>
