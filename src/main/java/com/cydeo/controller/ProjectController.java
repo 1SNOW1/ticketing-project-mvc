@@ -1,11 +1,14 @@
 package com.cydeo.controller;
 
 import com.cydeo.dto.ProjectDTO;
+import com.cydeo.dto.UserDTO;
 import com.cydeo.enums.Status;
 import com.cydeo.service.ProjectService;
 import com.cydeo.service.UserService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 @Controller
@@ -46,4 +49,35 @@ public class ProjectController {
 
         return "redirect:/project/create";
     }
+
+    @GetMapping("/complete/{projectCode}")
+    public String completeString(@PathVariable("projectCode") String projectCode){
+
+        projectService.complete(projectService.findById(projectCode)); //you have to add the button in project create, note to myself
+
+        return "redirect:/project/create";
+    }
+
+
+    @GetMapping("/update/{projectCode}")
+    public String editUser(@PathVariable("projectCode") String projectCode, Model model){
+        //what is going to be inside?? answer --> whatever the view is looking for
+
+        //user object ${user}
+        model.addAttribute("project", projectService.findById(projectCode));
+        model.addAttribute("managers", userService.findManager());
+        model.addAttribute("projects", projectService.findAll());
+
+
+        return "/project/update";
+    }
+
+    @PostMapping("/update")
+    public String updateUser(@Validated @ModelAttribute("project") ProjectDTO project, BindingResult bindingResult){
+
+        projectService.update(project);
+
+        return "redirect:/project/create";
+    }
+
 }
