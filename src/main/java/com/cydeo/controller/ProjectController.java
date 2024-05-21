@@ -73,7 +73,14 @@ public class ProjectController {
     }
 
     @PostMapping("/update")
-    public String updateUser(@Validated @ModelAttribute("project") ProjectDTO project, BindingResult bindingResult){
+    public String updateUser(@Validated @ModelAttribute("project") ProjectDTO project, BindingResult bindingResult, Model model){
+
+        if (bindingResult.hasErrors()){
+            model.addAttribute("managers", userService.findManager());
+            model.addAttribute("projects", projectService.findAll());
+
+            return "/project/update";
+        }
 
         projectService.update(project);
 
