@@ -94,12 +94,13 @@ public class ProjectController {
     @GetMapping("/manager/project-status")
     public String getProjectByManager(Model model){
 
-        UserDTO manager = userService.findById("john@cydeo.com");
+        // Assuming `findByEmail` method is available to retrieve manager by email.
+        UserDTO manager = userService.findById("Abc1");
 
-        List<ProjectDTO> projects = projectService.findAll();
+        List<ProjectDTO> projects = projectService.getCountedListOfProjectDTO(manager);
         model.addAttribute("projects", projects);
 
-        return "/manager/project-status";
+        return "/manager/project-status";  // Ensure this path matches your HTML template location
     }
 
 }

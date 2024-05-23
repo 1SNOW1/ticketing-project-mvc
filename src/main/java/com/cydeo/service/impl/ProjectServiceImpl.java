@@ -1,15 +1,26 @@
 package com.cydeo.service.impl;
 
 import com.cydeo.dto.ProjectDTO;
+import com.cydeo.dto.TaskDTO;
+import com.cydeo.dto.UserDTO;
 import com.cydeo.enums.Status;
 import com.cydeo.service.CrudService;
 import com.cydeo.service.ProjectService;
+import com.cydeo.service.TaskService;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class ProjectServiceImpl extends AbstractMapService<ProjectDTO, String> implements ProjectService {
+
+    private final TaskService taskService;
+
+    public ProjectServiceImpl(TaskService taskService) {
+        this.taskService = taskService;
+    }
+
 
     @Override
     public ProjectDTO save(ProjectDTO project) {
@@ -49,4 +60,75 @@ public class ProjectServiceImpl extends AbstractMapService<ProjectDTO, String> i
 
         project.setProjectStatus(Status.COMPLETE);
     }
+
+    public List<ProjectDTO> getCountedListOfProjectDTO(UserDTO manager) {
+
+        List<ProjectDTO> projectList =
+                findAll().
+                        stream().
+                        filter(project -> project.getAssignedManager().equals(manager))
+                        .map(project -> {
+
+                            /*
+                            So why are we using ".map" here?
+                            Here we did a simple stream in which we are gathering all the projects
+                            that are assigned to a specific manager.
+                            The unsolved issue here is, the two fields we are looking for in the DB,
+                            namely the "completeTaskCount" and "unfinishedTaskCount" does not exist in the DB,
+                            so the "project" has nothing to retrieve.
+                            Hence, the stream is not finished and needs additional steps to be completed
+                             */
+                            List<TaskDTO> taskList = taskService.findTasksByManager(manager);
+                            int completeTaskCounts = (int) taskList.stream().filter(t -> t.getProject().equals(project) && t.getTaskStatus() == Status.COMPLETE).count();
+                            int unfinishedTaskCounts = (int) taskList.stream().filter(t -> t.getProject().equals(project) && t.getTaskStatus() != Status.COMPLETE).count();
+
+                            project.setCompleteTaskCounts(completeTaskCounts);
+                            project.setUnfinishedTaskCounts(unfinishedTaskCounts);
+
+
+                            return project;
+                        })
+                                .collect(Collectors.toList());
+
+
+        return projectList;
+    }
+
 }
+
+
+/*
+   public List<ProjectDTO> getCountedListOfProjectDTO(UserDTO manager) {
+
+        List<ProjectDTO> projectList =
+                findAll().
+                        stream().
+                        filter(project -> project.getAssignedManager().equals(manager))
+                        .map(project -> {
+
+                            /*
+                            So why are we using ".map" here?
+                            Here we did a simple stream in which we are gathering all the projects
+                            that are assigned to a specific manager.
+                            The unsolved issue here is, the two fields we are looking for in the DB,
+                            namely the "completeTaskCount" and "unfinishedTaskCount" does not exist in the DB,
+                            so the "project" has nothing to retrieve.
+                            Hence, the stream is not finished and needs additional steps to be completed
+                             */
+
+/*List<TaskDTO> taskList = taskService.findTasksByManager(manager);
+int completeTaskCounts = (int) taskList.stream().filter(t -> t.getProject().equals(project) && t.getTaskStatus() == Status.COMPLETE).count();
+int unfinishedTaskCounts = (int) taskList.stream().filter(t -> t.getProject().equals(project) && t.getTaskStatus() != Status.COMPLETE).count();
+
+                            project.setCompleteTaskCounts(completeTaskCounts);
+                            project.setUnfinishedTaskCounts(unfinishedTaskCounts);
+
+
+                            return project;
+                        })
+                                .collect(Collectors.toList());
+
+
+        return projectList;
+    }
+ */

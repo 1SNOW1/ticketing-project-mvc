@@ -35,4 +35,12 @@ public class ProjectDTO {
         this.projectDetail = projectDetail;
         this.projectStatus = projectStatus;
     }
+
+    /*
+    The constructor above was created because there are fields in this DTO that does not have a corresponding value on
+    some of the pages that also use info from this DTO, and ultimately it gives an error.
+    To address this error I made another constructor that does not
+    use all the fields and instead the ones necessary for that specific page using this DTO.
+
+     */
 }
