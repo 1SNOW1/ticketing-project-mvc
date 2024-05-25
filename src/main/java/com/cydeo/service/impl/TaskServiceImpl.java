@@ -49,6 +49,11 @@ public class TaskServiceImpl extends AbstractMapService<TaskDTO, Long> implement
         if (task.getAssignedDate() == null)
             task.setAssignedDate(LocalDate.now());
 
+        TaskDTO foundTask = findById(task.getId());
+
+        task.setTaskStatus(foundTask.getTaskStatus());
+        task.setAssignedDate(foundTask.getAssignedDate());
+
         super.update(task.getId(),task);
     }
 
@@ -59,5 +64,27 @@ public class TaskServiceImpl extends AbstractMapService<TaskDTO, Long> implement
                 .stream()
                 .filter(task -> task.getProject().getAssignedManager().equals(manager))
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<TaskDTO> findAllTasksByStatusIsNot(Status status) {
+        return findAll().
+                stream().
+                filter(task -> !task.getTaskStatus().equals(status))
+                .collect(Collectors.toList());
+    }
+
+    public List<TaskDTO> findAllTasksByStatus(Status status) {
+        return findAll().
+                stream().
+                filter(task -> task.getTaskStatus().equals(Status.COMPLETE))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public void updateStatus(TaskDTO task) {
+
+        findById(task.getId()).setTaskStatus(task.getTaskStatus()); //First, status is updated
+        update(task); //Second, task is updated with the new status information
     }
 }
