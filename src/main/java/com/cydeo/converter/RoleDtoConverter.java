@@ -19,6 +19,10 @@ public class RoleDtoConverter implements Converter<String, RoleDTO> {
     @Override
     public RoleDTO convert(String source) {
 
+        if (source == null || source.isEmpty()){
+            return null;
+        }
+
         return roleService.findById(Long.parseLong(source));
     }
 }

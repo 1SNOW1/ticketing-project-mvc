@@ -12,6 +12,8 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.yaml.snakeyaml.events.Event;
 
+import javax.validation.Valid;
+
 @Controller
 @RequestMapping("/user")
 public class UserController {
@@ -39,7 +41,16 @@ public class UserController {
 
 
     @PostMapping ("/create")
-    public String insertUser(@ModelAttribute("user") UserDTO user){
+    public String insertUser(@Valid @ModelAttribute("user") UserDTO user, BindingResult bindingResult, Model model){
+
+        if (bindingResult.hasErrors()){
+
+            model.addAttribute("roles", roleService.findAll());
+            model.addAttribute("users", userService.findAll());
+
+            return "/user/create";
+        }
+
 
         userService.save(user);
 
@@ -62,7 +73,7 @@ public class UserController {
     }
 
     @PostMapping("/update")
-    public String updateUser(@Validated @ModelAttribute("user")UserDTO user, BindingResult bindingResult){
+    public String updateUser(@Valid @ModelAttribute("user")UserDTO user, BindingResult bindingResult){
 
         userService.update(user);
 
